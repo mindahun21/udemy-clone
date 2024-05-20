@@ -1,5 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
+import './Cart.css';
 
 export default function Cart({ auth }) {
      const coursedetails= ['84 hours on-demand video',
