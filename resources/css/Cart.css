@@ -1,0 +1,203 @@
+.cart-container {
+  max-width: 370px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f8fa;
+  font-family: Arial, sans-serif;
+}
+.content{
+  margin: 15px;
+}
+.price-details {
+  display: flex;
+  margin-right: 20px;
+  margin-bottom: 10px; 
+}
+
+.price {
+  font-size: 34px;
+  font-weight: bold;
+  
+  margin-right: 10px;
+}
+
+.updated-price {
+  font-size: 16px;
+  margin-right: 10px;
+  text-decoration: line-through;
+  padding: 4px;
+  border-radius: 4px;
+  color: #757575;
+  background-color: #f9f9f9;
+}
+
+.price-off {
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.days-left {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.go-to-cart-button {
+  padding: 12px 24px;
+  background-color: #e00fa8;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 80%;
+  border:4px;
+  border-radius: 4px;
+  }
+.buttons-box{
+  display: flex;
+}
+
+.heart-button,
+.go-to-cart-button {
+     display: flex;
+    justify-content: space-between;}
+
+.heart-button{
+  padding: 12px;
+  background-color: white;
+  color: white;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid black;
+  margin-left: 10px;
+  position: relative;
+  display: inline-block;
+  justify-content: center;
+  
+}
+.buy-now-button {
+display: block;
+width: 100%;
+
+margin-top: 10px;
+padding: 12px 24px;
+border:1px solid black;
+border-radius: 4px;
+cursor: pointer;
+font-size: 16px;
+font-weight: 600;
+
+}
+
+.heart-button:hover,
+.buy-now-button:hover {
+  background-color: #f9f9f9;
+}
+
+.money-back-guarantee {
+  font-size: 14px;
+  color: #757575;
+  margin-top: 10px;
+  margin-left: 80px;
+}
+.courses-includes{
+  font-weight: bold;
+  
+}
+.course-details {
+  font-size: 14px;
+ 
+  margin-bottom: 10px;
+  line-height: 2.0;
+}
+
+
+
+
+.action-buttons {
+  display: flex;
+}
+
+.share-button,
+.gift-button,
+.apply-coupon-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  margin-right: 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  padding-right: 20px;
+  color: #757575;
+  margin-top: 10px;
+  background-color: white;
+  
+  
+}
+
+.button-with-bottom-line {
+  border-bottom: 1px solid black;
+}
+
+.coupon-details {
+  font-size: 14px;
+  color: #757575;
+  margin-top: 10px;
+  
+  
+  padding: 10px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+.exit-button {
+  padding: 8px 16px;
+  color: black;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none;
+  display: inline-block;
+  }
+.enter-coupon {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  
+}
+
+.enter-coupon input[type="text"] {
+  padding: 8px 16px;
+  border-radius: 0;
+  border: 1px solid black;
+  width: 200px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  
+}
+
+.apply-button {
+  padding: 8px 16px;
+  background-color: black;
+  color: white;
+  font-size: 14px;
+  border-radius: 0;
+  border: none;
+  
+}
+.team-access{
+  margin-left: 10px;
+}
+.udemy-business-button {
+  display: block;
+  width: 100%;
+  
+  margin-top: 10px;
+  padding: 12px 24px;
+  border:1px solid black;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+}
