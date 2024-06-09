@@ -38,7 +38,17 @@ class CourseController extends Controller
     public function show($id)
     {
         //
-        $course = Course::findOrFail($id);
+        $course = Course::with([
+                        'creator',
+                        'students',
+                        'category',
+                        'requirements',
+                        'sections.lectures',
+                        'rating',
+                        'for'
+                    ])
+                    ->withAvg('rating', 'rating')
+                    ->findOrFail($id);
 
         return Inertia::render("CoursePage", [
             "course"=> $course

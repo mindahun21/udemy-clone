@@ -32,6 +32,28 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/try',function(){
+    $query='development';
+    $courses = Course::query()
+                            ->leftJoin('categories','courses.category_id', '=', 'categories.id')
+                            ->leftJoin('users', 'courses.user_id', '=', 'users.id')
+                            ->where('courses.title', 'like', '%'.$query .'%')
+                            ->orWhere('categories.name', 'like', '%'.$query .'%')
+                            ->orWhere('users.name', 'like', '%'.$query .'%')
+                            ->with([
+                                'creator',
+                                'students',
+                                'category',
+                                'requirements',
+                                'sections',
+                                'rating',
+                                'for'
+                            ])
+                            ->select('courses.*')
+                            ->paginate(10)->onEachSide(1);
+    return $courses; 
+});
+
 Route::get('/categories', [CategoryController::class, 'index']);
 
 Route::get('/search',[SearchController::class,'search'])->name('search');

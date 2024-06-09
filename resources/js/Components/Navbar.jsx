@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useForm } from "@inertiajs/react";
+import { Link, router, useForm } from "@inertiajs/react";
 import { Inertia } from "@inertiajs/inertia"
 import PropTypes from "prop-types";
 import ApplicationLogo from "./ui/ApplicationLogo";
@@ -131,7 +131,6 @@ function SearchBar() {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (data.q.length > 0) {
-            // console.log('hear we go ');
             get('/search');
         }
     }
@@ -181,18 +180,19 @@ function SearchBar() {
     );
 }
 
-function Category({ children }) {
+function Category({ category }) {
+    function handleClick(name) {
+        router.get(`/search/?q=${name}`);
+    }
     return (
-        <li className="pb-2 hover:text-purple-700 cursor-pointer">
-            {children}
+        <li
+            className="pb-2 hover:text-purple-700 cursor-pointer"
+            onClick={()=>handleClick(category.name)}
+        >
+            {category.name}
         </li>
     );
 }
-
-Category.propTypes = {
-    children: PropTypes.node.isRequired,
-};
-
 
 function Navbar({ user }) {
     const categories = useCategories();
@@ -222,8 +222,8 @@ function Navbar({ user }) {
                         }`}
                     >
                         <ul className="p-3">
-                            {categories.map((category) => (
-                                <Category key={category.id}>{category.name}</Category>
+                            {categories.map((category, index) => (
+                                <Category key={index} category={category} />
                             ))}
                         </ul>
                     </div>

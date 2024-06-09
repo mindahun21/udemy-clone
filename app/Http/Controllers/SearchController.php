@@ -25,11 +25,8 @@ class SearchController extends Controller
                                 'rating',
                                 'for'
                             ])
-                            ->withAvg('rating', 'rating')
-                            ->withCount('rating')
                             ->select('courses.*')
-                            ->orderByDesc ('rating_avg_rating')
-                            ->get();
+                            ->paginate(10)->onEachSide(1);
         return Inertia::render('SearchResult', [
             'courses' => $courses,
             'query' => $query,
