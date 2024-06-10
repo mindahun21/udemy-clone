@@ -243,7 +243,7 @@ function Navbar({ user }) {
                     ): (
                     <NavLinkItem
                         className="self-center px-2 text-center"
-                        href="/teach"
+                        href={route("instructor")}
                     >
                         Teach on Udemy
                     </NavLinkItem>

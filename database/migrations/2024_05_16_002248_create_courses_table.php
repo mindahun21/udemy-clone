@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    //TODO: add imageUrl
+    //TODO: add imageUrl, 
     public function up(): void
     {
         Schema::create('courses', function (Blueprint $table) {
