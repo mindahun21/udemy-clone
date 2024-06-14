@@ -1,8 +1,7 @@
 import { Disclosure } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/20/solid";
 import { TvIcon, DocumentIcon } from "@heroicons/react/24/outline";
-import { Link } from "@inertiajs/react";
-import SecondaryButton from "./ui/SecondaryButton";
+
 
 export default function Accordian({ sections }) {
     return (
@@ -24,8 +23,7 @@ export default function Accordian({ sections }) {
                                 </div>
                                 <div>
                                     <span className="text-sm text-gray-400">
-                                        {section.lecture_count} lectures -{" "}
-                                        {section.lecture_min_count}{" "}
+                                        {section.lectures.length} lectures 
                                     </span>
                                 </div>
                             </Disclosure.Button>
@@ -36,28 +34,22 @@ export default function Accordian({ sections }) {
                                             key={i}
                                             className="flex items-center justify-between p-2"
                                         >
-                                            <Link href={lecture.url}>
-                                                <div className="flex items-center">
-                                                    <div className="h-4 w-4 mr-2">
-                                                        {lecture.type ===
-                                                        "video" ? (
-                                                            <TvIcon />
-                                                        ) : (
-                                                            <DocumentIcon />
-                                                        )}
-                                                    </div>
-                                                    <span>{lecture.title}</span>
+                                            <div className="flex items-center">
+                                                <div className="h-4 w-4 mr-2">
+                                                    {lecture.type ===
+                                                    "video" ? (
+                                                        <TvIcon />
+                                                    ) : (
+                                                        <DocumentIcon />
+                                                    )}
                                                 </div>
-                                            </Link>
+                                                <span >{lecture.title}</span>
+                                            </div>
                                             <div className="flex items-center gap-3 text-right">
-                                                {lecture.type == "video" ? (
-                                                    <SecondaryButton className="text-xs border-0 shadow-none capitalize">
-                                                        Preview
-                                                    </SecondaryButton>
-                                                ) : null}
+                                                
                                                 {
                                                     <span className="text-gray-400 text-xs">
-                                                        {lecture.min}
+                                                        {"3:32"}
                                                     </span>
                                                 }
                                             </div>

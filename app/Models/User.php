@@ -44,4 +44,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function courses(){
+        return $this->hasMany(Course::class);
+    }
+
+    public function cartCourses(){
+        return $this->belongsToMany(Course::class, 'course_user')->wherePivot('status', 'cart');
+    }
+
+    public function enrolledCourses(){
+        return $this->belongsToMany(Course::class, 'course_user')->wherePivot('status', 'enrolled');
+    }
+
+    public function isLecturer() {
+        return $this->role == 'lecturer';
+    }
 }
