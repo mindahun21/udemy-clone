@@ -25,13 +25,16 @@ class Course extends Model
     public function requirements(){
         return $this->hasMany(Requirement::class);
     }
+    public function objectives(){
+        return $this->hasMany(Objective::class);
+    }
     public function sections(){
         return $this->hasMany(Section::class);
     }
     public function rating(){
         return $this->hasMany(Rating::class);
     }
-    public function for(){
+    public function courseFor(){
         return $this->hasMany(CourseFor::class);
     }
     public function avgRating(){

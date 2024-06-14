@@ -5,6 +5,7 @@ import Footer from "@/Components/ui/Footer";
 import { Head } from "@inertiajs/react";
 
 export default function Welcome({ auth, courses }) {
+    // console.log(auth.user);
   return (
       <>
           <Head title="Udemy-clone" />

@@ -23,7 +23,7 @@ class SearchController extends Controller
                                 'requirements',
                                 'sections',
                                 'rating',
-                                'for'
+                                'courseFor'
                             ])
                             ->select('courses.*')
                             ->paginate(10)->onEachSide(1);

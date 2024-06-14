@@ -16,26 +16,11 @@ class InstructorController extends Controller
         if(!$user){
             return to_route('login');
         }
-        if(!$user->role){
+        if($user->role === 'student'){
             $user->role = 'lecturer';
             $user->save();
         }
-        $courses = Course::with([
-                            'creator',
-                            'students',
-                            'category',
-                            'requirements',
-                            'sections',
-                            'rating',
-                            'for'
-                        ])
-                        ->where('creator_id', $user->id)
-                        ->withAvg('rating', 'rating')
-                        ->withCount('rating')
-                        ->orderByDesc('rating_avg_rating')
-                        ->get();
-        return Inertia::render('Instructor',[
-            'courses' => $courses,
-        ]);
+
+        return Inertia::render('Instructor',[]);
     }
 }

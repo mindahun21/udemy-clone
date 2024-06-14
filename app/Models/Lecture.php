@@ -10,6 +10,7 @@ class Lecture extends Model
     use HasFactory;
 
     protected $casts = ['file' => 'binary'];
+    protected $fillable = ['title', 'course_id'];
     public function section(){
         return $this->belongsTo(Section::class);
     }

@@ -17,9 +17,9 @@ class LectureFactory extends Factory
     public function definition(): array
     {
         return [
-            'path'=>'lectures/'.fake()->image(),
-            'type' => fake()->randomElement(['video', 'document']), 
-            'previewable'=>false,
+            'title' => fake()->sentence(),
+            'path'=>'lectures/'.fake()->randomElement(['lecture1.mp4','lecture2.mp4','lecture3.mp4']),
+            'type' => 'video',
         ];
     }
 }

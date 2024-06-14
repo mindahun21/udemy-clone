@@ -18,9 +18,9 @@ NavLinkItem.propTypes = {
     className: PropTypes.string,
     children: PropTypes.node.isRequired,
 };
-function CartNavLink() {
+function CartNavLink({ user }) {
     return (
-        <div className="px-2 self-center">
+        <div className="relative px-2 self-center">
             <Link href="/cart">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -37,6 +37,10 @@ function CartNavLink() {
                     />
                 </svg>
             </Link>
+            {user.cart_courses.length > 0 &&
+            
+              <div className="absolute -top-3 -right-1 bg-purple-500 text-white px-2 rounded-full"> {user.cart_courses.length} </div>
+            }
         </div>
     );
 }
@@ -221,7 +225,7 @@ function Navbar({ user }) {
                             showCategories ? "block" : "hidden"
                         }`}
                     >
-                        <ul className="p-3">
+                        <ul className="p-3 z-50">
                             {categories.map((category, index) => (
                                 <Category key={index} category={category} />
                             ))}
@@ -233,21 +237,20 @@ function Navbar({ user }) {
             <SearchBar />
             <div className="flex align-center">
                 <div className="flex align-center gap-2">
-                    {user && user.isLecturer ? (
+                    {user && user.role == "lecturer" ? (
                         <NavLinkItem
-                        className="self-center px-2 text-center"
-                        href="/teach"
-                    >
-                        Instructor
-                    </NavLinkItem>
-                    ): (
-                    <NavLinkItem
-                        className="self-center px-2 text-center"
-                        href={route("instructor")}
-                    >
-                        Teach on Udemy
-                    </NavLinkItem>
-                            
+                            className="self-center px-2 text-center"
+                            href={route("instructor")}
+                        >
+                            Instructor
+                        </NavLinkItem>
+                    ) : (
+                        <NavLinkItem
+                            className="self-center px-2 text-center"
+                            href={route("instructor")}
+                        >
+                            Teach on Udemy
+                        </NavLinkItem>
                     )}
                     {user && (
                         <NavLinkItem
@@ -257,7 +260,7 @@ function Navbar({ user }) {
                             My Learnings
                         </NavLinkItem>
                     )}
-                    <CartNavLink />
+                    <CartNavLink user={user} />
                     {user ? (
                         <ProfileNavLink user={user} />
                     ) : (

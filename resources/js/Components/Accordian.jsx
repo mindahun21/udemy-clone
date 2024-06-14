@@ -43,7 +43,7 @@ export default function Accordian({ sections }) {
                                                         <DocumentIcon />
                                                     )}
                                                 </div>
-                                                <span >{lecture.path}</span>
+                                                <span >{lecture.title}</span>
                                             </div>
                                             <div className="flex items-center gap-3 text-right">
                                                 

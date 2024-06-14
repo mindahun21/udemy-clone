@@ -1,7 +1,8 @@
+import { router } from "@inertiajs/react";
 import React, { useState } from "react";
 import StarRatings from "react-star-ratings";
 
-const CourseList = ({courses}) => {
+const CourseList = ({courses }) => {
 
   return (
     <div className=" w-3/4 p-3">
@@ -12,7 +13,7 @@ const CourseList = ({courses}) => {
   );
 };
 
-const CourseListItem = ({ course }) => {
+export const CourseListItem = ({ course, children }) => {
   let rating;
   if (course.rating.length > 0) {
     const totalRating = course.rating.reduce((sum, rating) => sum + rating.rating, 0);
@@ -21,12 +22,19 @@ const CourseListItem = ({ course }) => {
   } else {
     rating = 0;
   }
+
+  const handleClick = (course) => {
+      router.get(`/course/${course.id}`);
+  };
+
   
-console.log(rating)
   return (
-      <div className="flex items-center mb-4 border-b border-gray-400 w-full">
+      <div
+          className="flex items-center mb-4 border-b border-gray-400 w-full"
+          onClick={() => handleClick(course)}
+      >
           <img
-              src="https://source.unsplash.com/random/300x200?oop"
+              src={course.image_path}
               alt="course image"
               className="w-40 h-28 mr-4 object-cover"
           />
@@ -54,7 +62,10 @@ console.log(rating)
                   </div>
               </div>
       </div>
-      <div className="font-bold text-3xl"> ${ course.price}</div>
+      <div className="flex flex-col">
+          <p className="font-bold text-3xl text-green-600"> ${course.price}</p>
+          {children}
+      </div>
       </div>
   );
 };

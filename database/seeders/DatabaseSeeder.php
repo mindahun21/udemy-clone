@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseFor;
 use App\Models\Lecture;
+use App\Models\Objective;
 use App\Models\Rating;
 use App\Models\Requirement;
 use App\Models\Section;
@@ -79,6 +80,8 @@ class DatabaseSeeder extends Seeder
 
             // Create 5 course_for entries for each course
             CourseFor::factory()->count(5)->create(['course_id' => $course->id]);
+
+            Objective::factory()->count(5)->create(['course_id' => $course->id]);
         });
     }
 }

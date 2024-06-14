@@ -5,12 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CourseFor extends Model
+class Objective extends Model
 {
     use HasFactory;
     protected $fillable = ['text', 'course_id'];
-
-    public function cource(){
+    public function course(){
         return $this->belongsTo(Course::class);
     }
 }

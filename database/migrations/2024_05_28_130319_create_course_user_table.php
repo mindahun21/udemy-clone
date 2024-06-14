@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('course_user', function (Blueprint $table) {
             $table->id();
+            $table->string('status')->default('cart');
             $table->foreignId('course_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

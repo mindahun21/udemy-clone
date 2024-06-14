@@ -2,27 +2,36 @@ import PrimaryButton from "@/Components/ui/PrimaryButton";
 import { useCategories } from "@/Contexts/CategoyContext";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
+import { useState } from "react";
 
 
 export default function CreateCourse({ auth }) {
     const categories = useCategories();
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing } = useForm({
         title: "",
         category_id: null,
     })
-    console.log(categories);
+    const [errors, setErrors] = useState({});
+    console.log(auth.user);
 
     const handleSubmit = (e) => { 
         e.preventDefault();
         setData('errors', {});
-        if (!data.title.length > 0) {
-            setData('errors', { title: 'please enter a title' });
+        if (!data.title) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                title: "Please enter a title",
+            }));
             return;
         }
+
         if (!data.category_id) {
-            setData('errors', { category_id: 'error please select category'});
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                category_id: "Please select a category",
+            }));
             return;
-        } 
+        }
         post("/instructor/course/create");
         
     }
@@ -49,7 +58,7 @@ export default function CreateCourse({ auth }) {
                                     It's ok if you can't think of a good title
                                     now. You can change it later.
                                 </p>
-                                <div>
+                                <div className="flex flex-col">
                                     <input
                                         type="text"
                                         className="max-w-[450px] min-w-[450px]"
@@ -77,7 +86,7 @@ export default function CreateCourse({ auth }) {
                                     If you're not sure about the right category,
                                     you can change it later.
                                 </p>
-                                <div>
+                                <div className="flex flex-col">
                                     <select
                                         type="text"
                                         className="max-w-[450px] min-w-[450px]"

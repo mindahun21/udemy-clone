@@ -19,6 +19,7 @@ function Course({ course }) {
                 <div className="top-7 right-1/2">
                     <Link
                         className="text-purple-600 font-bold text-2xl"
+                        href={route('course.edit',{id: course.id})}
                     >
                         Edit/ Manage
                     </Link>
@@ -31,9 +32,10 @@ function Course({ course }) {
 
 
 export default function Instructor({ auth }) {
-    const { courses } = usePage().props;
+    const courses = auth.user.courses;
 
-    console.log(courses);
+
+    console.log(auth.user);
 
     return (
         <AuthenticatedLayout user={auth.user}>

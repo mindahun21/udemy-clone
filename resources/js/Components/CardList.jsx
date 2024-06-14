@@ -19,7 +19,7 @@ const CardList = ({ courses }) => {
                   >
                       <img
                           className="h-40 w-full object-cover"
-                          src="https://source.unsplash.com/random/300x200?oop"
+                          src={course.image_path}
                           alt={course.title}
                       />
                       <div className="p-4">

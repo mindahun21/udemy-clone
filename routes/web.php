@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\InstructorController;
@@ -18,13 +19,15 @@ Route::get('/', function () {
         'requirements',
         'sections',
         'rating',
-        'for'
+        'courseFor'
     ])
     ->withAvg('rating', 'rating')
     ->withCount('rating')
     ->orderByDesc('rating_avg_rating')
     ->take(20)
     ->get();
+
+    $user = auth()->user()->load('courses', 'cartCourses', 'enrolledCourses');
     
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -48,7 +51,7 @@ Route::get('/try',function(){
                                 'requirements',
                                 'sections',
                                 'rating',
-                                'for'
+                                'courseFor'
                             ])
                             ->select('courses.*')
                             ->paginate(10)->onEachSide(1);
@@ -59,20 +62,23 @@ Route::get('/categories', [CategoryController::class, 'index']);
 
 Route::get('/search',[SearchController::class,'search'])->name('search');
 Route::get('/course/{id}',[CourseController::class, 'show'])->name('course.show');
+Route::post('/course/addtocart/{id}',[CourseController::class, 'addtocart'])->name('course.addtocart');
+Route::post('/course/enroll/{id}',[CourseController::class, 'enroll'])->name('course.enroll');
+Route::post('/course/enroll-all',[CourseController::class, 'enrollall'])->name('course.enroll-all');
+
+
+Route::get('/instructor', [InstructorController::class, 'index'])->name('instructor');
 Route::get('/instructor/course/create',function(){
     return Inertia::render('CreateCourse');
 })->name('course.create');
 Route::post('/instructor/course/create',[CourseController::class, 'create'])->name('course.create');
 
-Route::patch('/instructor/course/{id}/update',[CourseController::class, 'update'])->name('course.update');
-Route::get('/instructor/course/{id}/edit',[CourseController::class, 'edit'])->name('course.edit');
+Route::post('/instructor/course/{id}/update',[CourseController::class, 'update'])->name('course.update');
+Route::get('/instructor/course/{id}/update',[CourseController::class, 'edit'])->name('course.edit');
 
 
-Route::get('/cart', function(){
-    return Inertia::render('Cart',[]);
-});
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
 
-Route::get('/instructor', [InstructorController::class, 'index'])->name('instructor');
 
 Route::get('/learn', function(){
     return Inertia::render('Learn',[]);

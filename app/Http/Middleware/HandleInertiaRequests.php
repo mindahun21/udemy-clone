@@ -29,10 +29,56 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+    
+        if ($user) {
+            $user->load([
+                'courses' => function ($query) {
+                    $query->with([
+                        'creator',
+                        'students',
+                        'category',
+                        'requirements',
+                        'objectives',
+                        'sections',
+                        'rating',
+                        'courseFor'
+                    ]);
+                }, 
+                'cartCourses'=> function ($query) {
+                    $query->with([
+                        'creator',
+                        'students',
+                        'category',
+                        'objectives',
+                        'requirements',
+                        'sections',
+                        'rating',
+                        'courseFor'
+                    ]);
+                },
+                'enrolledCourses'=> function ($query) {
+                    $query->with([
+                        'creator',
+                        'students',
+                        'category',
+                        'objectives',
+                        'requirements',
+                        'sections',
+                        'rating',
+                        'courseFor'
+                    ]);
+                }
+            ]);
+        }
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
+            ],
+            'flash' => [
+                'message' => fn () => $request->session()->get('message'),
+                'error' => fn () => $request->session()->get('error'),
             ],
         ];
     }

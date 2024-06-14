@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('lectures', function (Blueprint $table) {
             $table->id();
-            $table->string('path');
-            $table->enum('type', ['video', 'document']);
-            $table->boolean('previewable')->default(false);
+            $table->string('title')->nullable();
+            $table->string('path')->nullable();
+            $table->enum('type', ['video', 'document'])->nullable();
             $table->foreignId('section_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

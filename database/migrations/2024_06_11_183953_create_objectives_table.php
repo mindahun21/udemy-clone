@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('courses', function (Blueprint $table) {
-            $table->string('imageUrl')->nullable()->after('preview_path');
+        Schema::create('objectives', function (Blueprint $table) {
+            $table->id();
+            $table->text('text');
+            $table->foreignId('course_id')->constrained()->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('courses', function (Blueprint $table) {
-        $table->dropColumn('imageUrl');       
-    });
+        Schema::dropIfExists('objectives');
     }
 };
