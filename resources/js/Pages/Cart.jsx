@@ -1,64 +1,115 @@
-
+import CourseList, { CourseListItem } from "@/Components/CourseList";
+import PrimaryButton from "@/Components/ui/PrimaryButton";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
-import './Cart.css';
+import { Head, router, usePage } from "@inertiajs/react";
+import { useEffect, useState } from "react";
 
 export default function Cart({ auth }) {
-     const coursedetails= ['84 hours on-demand video',
-                        '9 articles','2 downloadable resources', 'Access on mobile and TV',
-                        'Full lifetime access','Certificate of completion'
-  ];
+    const cart_courses = auth.user.cart_courses;
+    const [isInEnrolled, setIsInEnrolled] = useState({});
+
+    useEffect(() => {
+        const initialIsInEnrolledState = cart_courses.reduce((acc, course) => {
+            acc[course.id] = false;
+            return acc;
+        }, {});
+
+        setIsInEnrolled(initialIsInEnrolledState);
+    }, [cart_courses]);
+
+
+    const totalCost = cart_courses.reduce((a, b) => a + b.price, 0);
+    const handleEnroll = (course) => {
+        setIsInEnrolled((prevState) => ({
+            ...prevState,
+            [course.id]: true,
+        }));
+        router.post(
+            `/course/enroll/${course.id}`,
+            { course_id: course.id },
+            {
+                onSuccess: (page) => {
+                    setIsInEnrolled(true);
+                },
+                onError: (errors) => {
+                    //handle errors
+                },
+            }
+        );
+    };
+
+    const handleCheckoutAll = () => { 
+        router.post('/course/enroll-all');
+    }
+
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="shoping-cart" />
 
             {/* implementation starts */}
-            <div className="cart-container">
-          <div className="content">
-            <div className="price-details">
-                <span className="price">$9.99</span>
-                <span className="updated-price">$74.99</span>
-                <span className="price-off">87% off</span>
+            <div className="py-12">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div className="flex flex-col p-6 text-gray-900">
+                            <div className="flex justify-between mb-5">
+                                {cart_courses.length > 0 ? (
+                                    <p className="text-2xl font-bold">
+                                        Courses in your cart
+                                    </p>
+                                ) : (
+                                    <p className="text-2xl font-bold">
+                                        No Courses in your cart
+                                    </p>
+                                )}
+                            </div>
+                            <div className="flex">
+                                <div className=" w-3/4 p-3">
+                                    {cart_courses.map((course, index) => (
+                                        <CourseListItem
+                                            key={index}
+                                            course={course}
+                                        >
+                                            {isInEnrolled[course.id] && (
+                                                <PrimaryButton
+                                                    className="bg-purple-400 hover:bg-purple-500"
+                                                    onClick={() =>
+                                                        handleEnroll(course)
+                                                    }
+                                                >
+                                                    {" "}
+                                                    check out
+                                                </PrimaryButton>
+                                            )}
+                                        </CourseListItem>
+                                    ))}
+                                </div>
+                                {cart_courses.length > 0 && (
+                                    <div className="flex flex-col w-1/4 items-end">
+                                        <PrimaryButton
+                                            className="bg-purple-600 hover:bg-purple-500"
+                                            onClick={handleCheckoutAll}
+                                        >
+                                            check out all
+                                        </PrimaryButton>
+                                        <div className="mt-2">
+                                            <p className="text-2xl">
+                                                {" "}
+                                                Total cost{" "}
+                                                <span className="text-3xl font-bold text-green-700">
+                                                    ${totalCost}
+                                                </span>{" "}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="days-left">2 days left at this price!</div>
-            <div className="buttons-container">
-            <div className="buttons-box">
-                <button className="go-to-cart-button">Go to Cart</button>
-                
-                    <button className="heart-button">❤️</button></div>
-                    <button className="buy-now-button">Buy Now</button>
-                
-            </div>
-            <div className="money-back-guarantee">30-Day Money-back guarantee</div>
-            <div className="course-details">
-                <p className="courses-includes">This course includes:</p>
-                <ul className="course-details-list">
-                  {coursedetails.map((include,index)=>(
-                    <li key={index}>{include}</li>
-                  ))}
-                </ul>
-            </div>
-            <div class="action-buttons">
-        <button class="share-button button-with-bottom-line">Share</button>
-        <button class="gift-button button-with-bottom-line">Gift this course</button>
-        <button class="apply-coupon-button button-with-bottom-line">Apply Coupon</button>
-    </div>
-            <div className="coupon-details"><b>LEADERSALE24A</b> is applied Udemy coupon
-                        <button class="exit-button">X</button>
-                             </div>
-            <div className="enter-coupon">
-                <input type="text" placeholder="Enter Coupon" />
-                <button className="apply-button">Apply</button>
-            </div>
-            
-            <div className="team-access"><b>Training 5 or more people?</b><pre>Get your team access to 2500+ top udemy</pre> <pre>courses anytime, anywhere.</pre></div>
-            <button className="udemy-business-button">Try Udemy Business</button>
-            </div> </div>
-            
 
             {/* implementation ends */}
-
         </AuthenticatedLayout>
     );
 }
-export default Cart;
