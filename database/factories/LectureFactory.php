@@ -18,7 +18,7 @@ class LectureFactory extends Factory
     {
         return [
             'title' => fake()->sentence(),
-            'path'=>'lectures/'.fake()->randomElement(['lecture1.mp4','lecture2.mp4','lecture3.mp4']),
+            'path'=>'/lectures/'.fake()->randomElement(['lecture1.mp4','lecture2.mp4','lecture3.mp4']),
             'type' => 'video',
         ];
     }

@@ -42,12 +42,12 @@ export default function Cart({ auth }) {
         router.post('/course/enroll-all');
     }
 
+    console.log(cart_courses);
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout auth={auth}>
             <Head title="shoping-cart" />
 
-            {/* implementation starts */}
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -70,9 +70,9 @@ export default function Cart({ auth }) {
                                             key={index}
                                             course={course}
                                         >
-                                            {isInEnrolled[course.id] && (
+                                            {!isInEnrolled[course.id] && (
                                                 <PrimaryButton
-                                                    className="bg-purple-400 hover:bg-purple-500"
+                                                    className="bg-purple-400 hover:bg-purple-500 z-10"
                                                     onClick={() =>
                                                         handleEnroll(course)
                                                     }
@@ -109,7 +109,6 @@ export default function Cart({ auth }) {
                 </div>
             </div>
 
-            {/* implementation ends */}
         </AuthenticatedLayout>
     );
 }

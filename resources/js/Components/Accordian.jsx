@@ -3,14 +3,14 @@ import { ChevronUpIcon } from "@heroicons/react/20/solid";
 import { TvIcon, DocumentIcon } from "@heroicons/react/24/outline";
 
 
-export default function Accordian({ sections }) {
+export default function Accordian({ sections, handleClick }) {
     return (
         <div className="w-full mx-auto max-w-3xl border border-stone-300">
             {sections.map((section, idx) => (
                 <Disclosure key={idx}>
                     {({ open }) => (
                         <>
-                            <Disclosure.Button className="flex w-full justify-between items-center bg-gray-200 p-4 text-left focus:outline-none focus-visible:ring border-b border-stone-300">
+                            <Disclosure.Button className="flex w-full justify-between items-center bg-gray-100 hover:bg-slate-200 p-4 text-left focus:outline-none focus-visible:ring border-b border-stone-300">
                                 <div className="flex gap-2 items-center">
                                     <ChevronUpIcon
                                         className={`${
@@ -27,12 +27,13 @@ export default function Accordian({ sections }) {
                                     </span>
                                 </div>
                             </Disclosure.Button>
-                            <Disclosure.Panel className="px-4 pb-2 pt-4 text-sm">
+                            <Disclosure.Panel className=" text-sm">
                                 <ul>
                                     {section.lectures.map((lecture, i) => (
                                         <li
                                             key={i}
-                                            className="flex items-center justify-between p-2"
+                                            className="flex items-center justify-between p-3 hover:bg-gray-200 cursor-pointer"
+                                            onClick={()=>handleClick(lecture)}
                                         >
                                             <div className="flex items-center">
                                                 <div className="h-4 w-4 mr-2">

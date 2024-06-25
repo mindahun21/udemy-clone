@@ -10,7 +10,7 @@ export default function Welcome({ auth, courses }) {
       <>
           <Head title="Udemy-clone" />
           <div className="dark:bg-black dark:text-white/50 ">
-              <Navbar user={auth.user} />
+              <Navbar auth={auth} />
               <div className="mx-96">
                   <div className="text-center font-sans mb-10">
                       <div className="flex justify-between items-center bg-gray-100 p-6">

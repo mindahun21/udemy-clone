@@ -34,11 +34,8 @@ function Course({ course }) {
 export default function Instructor({ auth }) {
     const courses = auth.user.courses;
 
-
-    console.log(auth.user);
-
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout auth={auth}>
             <Head title="instructor" />
 
             <div className="py-12 ">

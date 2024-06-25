@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
 use App\Models\Course;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -27,7 +28,6 @@ Route::get('/', function () {
     ->take(20)
     ->get();
 
-    $user = auth()->user()->load('courses', 'cartCourses', 'enrolledCourses');
     
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -65,6 +65,8 @@ Route::get('/course/{id}',[CourseController::class, 'show'])->name('course.show'
 Route::post('/course/addtocart/{id}',[CourseController::class, 'addtocart'])->name('course.addtocart');
 Route::post('/course/enroll/{id}',[CourseController::class, 'enroll'])->name('course.enroll');
 Route::post('/course/enroll-all',[CourseController::class, 'enrollall'])->name('course.enroll-all');
+Route::get('/course/learn/{id}',[CourseController::class, 'learn'])->name('course.learn');
+Route::post('/course/{id}/rate',[CourseController::class, 'rate'])->name('course.rate');
 
 
 Route::get('/instructor', [InstructorController::class, 'index'])->name('instructor');
@@ -76,13 +78,16 @@ Route::post('/instructor/course/create',[CourseController::class, 'create'])->na
 Route::post('/instructor/course/{id}/update',[CourseController::class, 'update'])->name('course.update');
 Route::get('/instructor/course/{id}/update',[CourseController::class, 'edit'])->name('course.edit');
 
+Route::get('my-learnings/',function(){
+    $user = Auth::user();
+    if(!$user){
+        return to_route('login');
+    }
+    return Inertia::render('MyLearning');
+})->name('my-learning');
+
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
-
-
-Route::get('/learn', function(){
-    return Inertia::render('Learn',[]);
-});
 
 
 Route::middleware('auth')->group(function () {

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CourseController extends Controller
 {
@@ -50,12 +52,21 @@ class CourseController extends Controller
         return Inertia::render('EditCourse',['course' => $course]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+
+    public function learn(Request $request, $id)
     {
-        //
+         $course = Course::with([
+                    'creator',
+                    'students',
+                    'category',
+                    'requirements',
+                    'objectives',
+                    'sections',
+                    'sections.lectures',
+                    'rating.user',
+                    'courseFor'])->find($id);
+
+        return Inertia::render("Learn", ['course'=>$course]);
     }
 
     /**
@@ -69,14 +80,14 @@ class CourseController extends Controller
                         'students',
                         'category',
                         'requirements',
+                        'objectives',
                         'sections.lectures',
-                        'rating',
+                        'rating.user',
                         'courseFor'
                     ])
                     ->withAvg('rating', 'rating')
                     ->findOrFail($id);
         
-        $user = auth()->user()->load('courses', 'cartCourses', 'enrolledCourses');
 
         return Inertia::render("CoursePage", [
             "course"=> $course,
@@ -109,35 +120,80 @@ class CourseController extends Controller
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'short_desc' => 'required|string',
-            'description' => 'required|string',
-            'price' => 'required|numeric',
+            'title' => 'nullable|string',
+            'short_desc' => 'nullable|string',
+            'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'preview_video' => 'nullable|mimes:mp4|max:10240',
+            'image_path' => 'nullable|string',
+            'preview_path' => 'nullable|string',
+            'prev_video' => 'nullable|file|mimes:mp4,mov,avi,flv,webm|max:20480',
+            'price' => 'numeric',
             'objectives' => 'array',
+            'objectives.*.id' => 'nullable',
+            'objectives.*.text' => 'nullable|string',
             'requirements' => 'array',
+            'requirements.*.id' => 'nullable',
+            'requirements.*.text' => 'nullable|string',
             'courseFor' => 'array',
+            'courseFor.*.id' => 'nullable',
+            'courseFor.*.text' => 'nullable|string',
             'sections' => 'array',
+            'sections.*.id' => 'nullable',
+            'sections.*.title' => 'nullable|string',
+            'sections.*.lectures' => 'array',
+            'sections.*.lectures.*.id' => 'nullable',
+            'sections.*.lectures.*.title' => 'nullable|string',
+            'sections.*.lectures.*.type' => 'nullable|string',
+            'sections.*.lectures.*.file' => 'nullable',   
+            'sections.*.lectures.*.path' => 'nullable|string',     
         ]);
 
-        $course = Course::findOrFail($id);
-        $course->title = $validatedData['title'];
-        $course->short_desc = $validatedData['short_desc'];
-        $course->description = $validatedData['description'];
-        $course->price = $validatedData['price'];
 
-        if (isset($validatedData['image'])) {
-            $image = $request->file('image');
-            $uniqueImageName = uniqid() . '_' . $image->getClientOriginalName();
-            $imagePath = $image->storeAs('course_images', $uniqueImageName, 'public');
-            $course->image_path = $imagePath;
+        $course = Course::findOrFail($id);
+        
+        if($validatedData['title']){
+            $course->title = $validatedData['title'];
         }
-        if (isset($validatedData['preview_video'])) {
-            $previewVideo = $request->file('preview_video');
-            $uniqueVideoName = uniqid() . '_' . $previewVideo->getClientOriginalName();
-            $previewVideoPath = $previewVideo->storeAs('course_previews', $uniqueVideoName, 'public');
-            $course->preview_path = $previewVideoPath;
+        if($validatedData['short_desc']){
+            $course->short_desc = $validatedData['short_desc'];
+        }
+        if($validatedData['description']){
+            $course->description = $validatedData['description'];
+        }
+        if($validatedData['price']){
+            $course->price = $validatedData['price'];
+        }
+
+        // update the image
+        if ($request->hasFile('image')) {
+            $originalFileName = $validatedData['image']->getClientOriginalName();
+            $imageName = time() . '_' . $originalFileName;
+
+            if ($course->image_path) {
+                $previousImagePath = public_path($course->image_path);
+                if (file_exists($previousImagePath)) {
+                    unlink($previousImagePath);
+                }
+            }
+
+            $validatedData['image']->move(public_path('course_images'), $imageName);
+
+            $course->image_path = "/course_images/" . $imageName;
+        }
+
+        if ($request->hasFile('prev_video')) {
+            $originalFileName = $validatedData['prev_video']->getClientOriginalName();
+            $videoName = time() .'_'. $originalFileName;
+            if($course->preview_path){
+                $previewVideoPath = public_path($course->preview_path);
+                if(file_exists($previewVideoPath)){
+                    unlink($previewVideoPath);
+                }
+            }
+            
+            $validatedData['prev_video']->move(public_path('course_previews'), $videoName);
+
+            $course->preview_path = "/course_previews/".$videoName;
         }
         
         $course->objectives()->delete();
@@ -165,27 +221,76 @@ class CourseController extends Controller
         }
 
 
-        $course->sections()->delete();
-        foreach ($validatedData['sections'] as $section) {
-            $newSection = $course->sections()->create(['title' => $section['title']]);
-            foreach ($section['lectures'] as $lecture) {
-                if($lecture['title'] && $lecture['type']){
-                    $path = "/app_images/default-course-image.jpg"; 
-                    if (isset($lecture['file'])) {
-                        $file = $lecture['file'];
-                        $uniqueFileName = uniqid() . '_' . $file->getClientOriginalName(); 
-                        $filePath = $file->storeAs('lectures', $uniqueFileName, 'public'); 
-                        $path = $filePath;
-                    }
-                    $newLecture = $newSection->lectures()->create([
-                        'title' => $lecture['title'],
-                        'type' => $lecture['type'] || "video",
-                        'path' => $path,
-                    ]);
+            // Update sections and lectures
+        $existingSections = $course->sections->keyBy('id');
+        $updatedSectionIds = [];
 
+        foreach ($validatedData['sections'] as $sectionData) {
+            if (strlen($sectionData['title']) > 0 || count($sectionData['lectures']) > 0) {
+                if (isset($sectionData['id']) && $existingSections->has($sectionData['id'])) {
+                    // Update existing section
+                    $section = $existingSections->get($sectionData['id']);
+                    $section->title = $sectionData['title'] ?? $section->title;
+                    $section->save();
+                    $updatedSectionIds[] = $section->id;
+                } else {
+                    // Create new section
+                    $section = $course->sections()->create(['title' => $sectionData['title']]);
                 }
+
+                $existingLectures = $section->lectures->keyBy('id');
+                $updatedLectureIds = [];
+
+                foreach ($sectionData['lectures'] as $lectureData) {
+                    if ($lectureData['title'] && $lectureData['type']) {
+                        $path =null;
+
+                        if (isset($lectureData['file'])) {
+                            $file = $lectureData['file'];
+                            $uniqueFileName = time() . '_' . $file->getClientOriginalName();
+                            $file->move(public_path('lectures'), $uniqueFileName);
+                            $path = "/lectures/" . $uniqueFileName;
+                        }
+
+                        if (isset($lectureData['id']) && $existingLectures->has($lectureData['id'])) {
+                            // Update existing lecture
+                            $lecture = $existingLectures->get($lectureData['id']);
+                            $lecture->title = $lectureData['title'];
+                            $lecture->type = $lectureData['type'];
+                            if($path){
+                                if ($lecture->path) {
+                                    $prevPath = public_path($lecture->path);
+                                    if (file_exists($prevPath)) {
+                                        unlink($prevPath);
+                                    }
+                                }
+                                $lecture->path = $path;
+                            
+                            }   
+                            $lecture->save();
+                            $updatedLectureIds[] = $lecture->id;
+                        } else {
+                            // Create new lecture
+                            $lecture = $section->lectures()->create([
+                                'title' => $lectureData['title'],
+                                'type' => $lectureData['type'] ?? 'video',
+                                'path' => $path,
+                            ]);
+                            $updatedLectureIds[] = $lecture->id;
+
+                        }
+                    }
+                }
+
+                // Delete lectures that are not in the updated data
+                $section->lectures()->whereNotIn('id', $updatedLectureIds)->delete();
             }
         }
+
+        // Delete sections that are not in the updated data
+        $course->sections()->whereNotIn('id', $updatedSectionIds)->delete();
+
+
         $course->save();
 
         return to_route('instructor');
@@ -211,6 +316,7 @@ class CourseController extends Controller
         ]);
 
         $user = Auth::user();
+
         
         if (!($user->cartCourses()->where('course_id', $id)->exists() || $user->enrolledCourses()->where('course_id',$id)->exists())) {
             $user->cartCourses()->attach($id, ['status' => 'cart']);
@@ -245,6 +351,30 @@ class CourseController extends Controller
             }
         }
         $user->cartCourses()->detach();
+        return redirect()->back();
+    }
+    public function rate(Request $request, $id){
+        $validatedData = $request->validate([
+            'comment' => 'string|max:255',
+            'rating' => 'numeric|integer|max:5', 
+            'id'=>'nullable',
+        ]);
+        $user = Auth::user();
+        $course = Course::find($id);
+
+        $rating = null;
+
+        if($validatedData['id']){
+            $rating = Rating::find($validatedData['id']);
+        }else{
+            $rating = new Rating();
+            $rating->user_id = $user->id;
+            $rating->course_id = $course->id;
+        }
+        $rating->comment = $validatedData['comment'];
+        $rating->rating = $validatedData['rating'];
+        $rating->save();
+
         return redirect()->back();
     }
 }

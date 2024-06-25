@@ -1,6 +1,9 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
 import React, { useEffect, useState } from 'react';
+import { Disclosure } from "@headlessui/react";
+import { ChevronUpIcon } from "@heroicons/react/20/solid";
+
 
 const CourseLandingForm = ({data, setData}) => {
 
@@ -70,14 +73,16 @@ const CourseLandingForm = ({data, setData}) => {
           <div>
               <p className="text-xl p-3">Course Image</p>
               <div className="flex h-48 gap-4   ">
-                  <img
-                      className="h-full"
-                      src={
-                          data.image_path ||
-                          "/app_images/default-course-image.jpg"
-                      }
-                      alt="course image"
-                  />
+                  <div className="h-full border-2 p-2 min-w-56">
+                      <img
+                          className="h-full"
+                          src={
+                              data.image_path ||
+                              "/app_images/default-course-image.jpg"
+                          }
+                          alt="course image"
+                      />
+                  </div>
                   <div className="flex flex-col gap-5">
                       <p>
                           Upload your course image here. It must meet our course
@@ -98,7 +103,7 @@ const CourseLandingForm = ({data, setData}) => {
               <p className="text-xl p-3">Promotional video</p>
               <div className="flex h-48 gap-4   ">
                   {data.preview_path ? (
-                      <div className="h-full">
+                      <div className="h-full border-2 p-2 min-w-56">
                           <video className="h-full" controls>
                               <source
                                   src={data.preview_path}
@@ -108,11 +113,13 @@ const CourseLandingForm = ({data, setData}) => {
                           </video>
                       </div>
                   ) : (
-                      <img
-                          className="h-full"
-                          src="/app_images/default-course-image.jpg"
-                          alt="course image"
-                      />
+                      <div className="h-full border-2 p-2 min-w-56 ">
+                          <img
+                              className="h-full"
+                              src="/app_images/default-course-image.jpg"
+                              alt="course image"
+                          />
+                      </div>
                   )}
                   <div className="flex flex-col gap-5">
                       <p>
@@ -136,15 +143,13 @@ const CourseLandingForm = ({data, setData}) => {
                   value={data.price}
                   type="number"
                   onChange={(e) => setData("price", e.target.value)}
+                  min={0}
                   className="border border-gray-400 ms-2 focus:border-purple-400"
               />
           </div>
       </div>
   );
 };
-
-
-
 
 const IntendedLearnersForm = ({ data, addItem, updateItem }) => {
 
@@ -278,7 +283,6 @@ const IntendedLearnersForm = ({ data, addItem, updateItem }) => {
     );
 };
 
-
 const CurriculumForm = ({ data, setData }) => {
 
 
@@ -330,127 +334,233 @@ const CurriculumForm = ({ data, setData }) => {
     const handleFileChange = (sectionIndex, lectureIndex, file) => {
         const updatedSections = [...data.sections];
         updatedSections[sectionIndex].lectures[lectureIndex].file = file;
+        updatedSections[sectionIndex].lectures[lectureIndex].path = URL.createObjectURL(file);
         setData({ ...data, sections: updatedSections });
     };
 
     return (
-        <div className="flex flex-col gap-10 mx-5 ">
+        <div className="flex flex-col mx-5 ">
             <div className="p-6 text-2xl border-b-2 border-gray-300">
                 <p>Carriculum</p>
             </div>
             {data.sections.map((section, sectionIndex) => (
-                <div
-                    key={sectionIndex}
-                    className="border border-gray-400 p-4 space-y-4 bg-gray-100"
-                >
-                    <div className="flex gap-2">
-                        <label className="block mb-1 text-xl w-52">
-                            Section {sectionIndex + 1}
-                            {" title "}:
-                        </label>
-                        <input
-                            type="text"
-                            value={section.title}
-                            onChange={(e) =>
-                                handleSectionTitleChange(
-                                    sectionIndex,
-                                    e.target.value
-                                )
-                            }
-                            className="w-full px-4 py-2 border rounded"
-                        />
-                    </div>
-                    <div>Lectures</div>
-                    <div className="flex flex-col gap-5">
-                        {section.lectures.map((lecture, lectureIndex) => (
-                            <div
-                                key={lectureIndex}
-                                className="bg-white p-4 space-y-4"
-                            >
-                                <div className="text-xl mb-6">
-                                    {" "}
-                                    Lecture {lectureIndex + 1}:{" "}
+                <Disclosure key={sectionIndex}>
+                    {({ open }) => (
+                        <div>
+                            <Disclosure.Button className="flex w-full justify-between items-center bg-gray-200 p-4 text-left focus:outline-none focus-visible:ring border-b border-stone-300">
+                                <div className="flex gap-2 items-center">
+                                    <ChevronUpIcon
+                                        className={`${
+                                            open ? "rotate-180 transform" : ""
+                                        } h-5 w-5`}
+                                    />
+                                    <span className="font-semibold">
+                                        {section.title}
+                                    </span>
                                 </div>
+                                <div>
+                                    <span className="text-sm text-gray-400">
+                                        {section.lectures.length} lectures
+                                    </span>
+                                </div>
+                            </Disclosure.Button>
+                            <Disclosure.Panel className="border border-gray-400 p-4 space-y-4 bg-gray-100 mb-2">
                                 <div className="flex gap-2">
-                                    <label className="block mb-1 text-xl w-20">
-                                        title:
+                                    <label className="block mb-1 text-xl w-52">
+                                        {" title "}:
                                     </label>
                                     <input
                                         type="text"
-                                        value={lecture.title}
+                                        value={section.title}
                                         onChange={(e) =>
-                                            handleLectureTitleChange(
+                                            handleSectionTitleChange(
                                                 sectionIndex,
-                                                lectureIndex,
                                                 e.target.value
                                             )
                                         }
                                         className="w-full px-4 py-2 border rounded"
                                     />
                                 </div>
-                                {lecture.type ? (
-                                    <div className="flex flex-col">
-                                        <p className="text-300 mb-4">
-                                            Lecture Type{" "}
-                                            <span className="bg-red-400 px-1 rounded-sm">
-                                                {lecture.type}
-                                            </span>
-                                        </p>
-                                        <input
-                                            type="file"
-                                            accept={
-                                                lecture.type === "video"
-                                                    ? "video/*"
-                                                    : ""
-                                            }
-                                            onChange={(e) =>
-                                                handleFileChange(
-                                                    sectionIndex,
-                                                    lectureIndex,
-                                                    e.target.files[0]
-                                                )
-                                            }
-                                            className="mr-2 border border-purple-400 bg-gray-100"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <label htmlFor="lecture-type">
-                                            Lecture Type:{" "}
-                                        </label>
-                                        <select
-                                            id="lecture-type"
-                                            value={lecture.type}
-                                            onChange={(e) =>
-                                                handleLectureTypeChange(
-                                                    sectionIndex,
-                                                    lectureIndex,
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="px-4 border rounded mr-2 w-80"
-                                        >
-                                            <option value="">
-                                                Select Type
-                                            </option>
-                                            <option value="video">Video</option>
-                                            <option value="document">
-                                                Document
-                                            </option>
-                                        </select>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                    <button
-                        type="button"
-                        onClick={() => handleAddLecture(sectionIndex)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded"
-                    >
-                        Add Lecture
-                    </button>
-                </div>
+                                <div className="text-xl text-purple-950">Lectures</div>
+                                <div className="flex flex-col">
+                                    {section.lectures.map(
+                                        (lecture, lectureIndex) => (
+                                            <Disclosure key={lectureIndex}>
+                                                {({ open1 }) => (
+                                                    <div>
+                                                        <Disclosure.Button className="flex w-full justify-between items-center bg-gray-200 p-4 text-left focus:outline-none focus-visible:ring border-b border-stone-300">
+                                                            <div className="flex gap-2 items-center">
+                                                                <ChevronUpIcon
+                                                                    className={`${
+                                                                        open1
+                                                                            ? "rotate-180 transform"
+                                                                            : ""
+                                                                    } h-5 w-5`}
+                                                                />
+                                                                <span className="font-semibold">
+                                                                    {
+                                                                        lecture.title
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                        </Disclosure.Button>
+                                                        <Disclosure.Panel className="bg-white p-4 space-y-4 mb-2">
+                                                            <div className="flex ">
+                                                                <label className="block mb-1 text-xl w-20">
+                                                                    title:
+                                                                </label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={
+                                                                        lecture.title
+                                                                    }
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        handleLectureTitleChange(
+                                                                            sectionIndex,
+                                                                            lectureIndex,
+                                                                            e
+                                                                                .target
+                                                                                .value
+                                                                        )
+                                                                    }
+                                                                    className="w-full px-4 py-2 border rounded"
+                                                                />
+                                                            </div>
+                                                            {lecture.type ? (
+                                                                <div className="flex gap-10">
+                                                                    <div className="flex flex-col w-3/4">
+                                                                        <p className="text-300 mb-4">
+                                                                            Lecture
+                                                                            Type{" "}
+                                                                            <span className="bg-red-400 px-1 rounded-sm">
+                                                                                {
+                                                                                    lecture.type
+                                                                                }
+                                                                            </span>
+                                                                        </p>
+                                                                        {lecture.path ? (
+                                                                            <p className="text-xl text-purple-500 pb-4">
+                                                                                you
+                                                                                can
+                                                                                change
+                                                                                the
+                                                                                file:
+                                                                            </p>
+                                                                        ) : (
+                                                                            <p className="text-xl text-purple-500 pb-4">
+                                                                                choose
+                                                                                the
+                                                                                file:{" "}
+                                                                            </p>
+                                                                        )}
+                                                                        <input
+                                                                            type="file"
+                                                                            accept={
+                                                                                lecture.type ===
+                                                                                "video"
+                                                                                    ? "video/*"
+                                                                                    : ""
+                                                                            }
+                                                                            onChange={(
+                                                                                e
+                                                                            ) =>
+                                                                                handleFileChange(
+                                                                                    sectionIndex,
+                                                                                    lectureIndex,
+                                                                                    e
+                                                                                        .target
+                                                                                        .files[0]
+                                                                                )
+                                                                            }
+                                                                            className="mr-2 border border-purple-400 bg-gray-100"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="w-1/4 border-2 p-2">
+                                                                        {lecture.type ===
+                                                                            "video" &&
+                                                                        lecture.path ? (
+                                                                            <video
+                                                                                className="h-full"
+                                                                                controls
+                                                                            >
+                                                                                <source
+                                                                                    src={
+                                                                                        lecture.path
+                                                                                    }
+                                                                                    type="video/mp4"
+                                                                                />
+                                                                                your
+                                                                                browser
+                                                                                does
+                                                                                not
+                                                                                support
+                                                                                the
+                                                                                video
+                                                                            </video>
+                                                                        ) : (
+                                                                            <img
+                                                                                className="h-full"
+                                                                                src="/app_images/default-course-image.jpg"
+                                                                                alt="course image"
+                                                                            />
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div>
+                                                                    <label htmlFor="lecture-type">
+                                                                        Lecture
+                                                                        Type:{" "}
+                                                                    </label>
+                                                                    <select
+                                                                        id="lecture-type"
+                                                                        value={
+                                                                            lecture.type
+                                                                        }
+                                                                        onChange={(e) =>
+                                                                            handleLectureTypeChange(
+                                                                                sectionIndex,
+                                                                                lectureIndex,
+                                                                                e.target.value
+                                                                            )
+                                                                        }
+                                                                        className="px-4 border rounded mr-2 w-80"
+                                                                    >
+                                                                        <option value="">
+                                                                            Select
+                                                                            Type
+                                                                        </option>
+                                                                        <option value="video">
+                                                                            Video
+                                                                        </option>
+                                                                        <option value="document">
+                                                                            Document
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+                                                            )}
+                                                        </Disclosure.Panel>
+                                                    </div>
+                                                )}
+                                            </Disclosure>
+                                        )
+                                    )}
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        handleAddLecture(sectionIndex)
+                                    }
+                                    className="px-4 py-2 bg-blue-600 text-white rounded"
+                                >
+                                    Add Lecture
+                                </button>
+                            </Disclosure.Panel>
+                        </div>
+                    )}
+                </Disclosure>
             ))}
             <button
                 type="button"
@@ -465,7 +575,6 @@ const CurriculumForm = ({ data, setData }) => {
 
 export default function EditCourse({ auth }) {
     const { course } = usePage().props;
-    console.log(course);
 
     const [currentForm, setCurrentForm] = useState("intendedLearners");
     const { data, setData, post, processing, errors } = useForm({
@@ -477,18 +586,23 @@ export default function EditCourse({ auth }) {
         preview_path: course.preview_path || null,
         prev_video: null,
         price: course.price || 0,
-        objectives: course.objectives.map((obj) => ({
-            id: obj.id,
-            text: obj.text,
-        })) || [{ id: null, text: "" }],
-        requirements: course.requirements.map((req) => ({
+        objectives:
+            course.objectives.length > 0
+                ? course.objectives.map((obj) => ({
+                      id: obj.id,
+                      text: obj.text,
+                  }))
+                : [{ id: null, text: "" }],
+        requirements: course.requirements.length > 0 ?
+            course.requirements.map((req) => ({
             id: req.id,
             text: req.text,
-        })) || [{ id: null, text: "" }],
-        courseFor: course.course_for.map((cfor) => ({
+        })) : [{ id: null, text: "" }],
+        courseFor: course.course_for.length > 0 ?
+            course.course_for.map((cfor) => ({
             id: cfor.id,
             text: cfor.text,
-        })) || [{ id: null, text: "" }],
+        })) : [{ id: null, text: "" }],
         sections: course.sections.map((section) => ({
             id: section.id || "",
             title: section.title || "",
@@ -497,10 +611,13 @@ export default function EditCourse({ auth }) {
                 title: lecture.title || "",
                 type: lecture.type || "",
                 file: null,
+                path: lecture.path || null,
             })),
         })),
     });
 
+    console.log(data);
+    console.log(course);
 
     const addItem = (field) => {
         setData(field, [...data[field], { id: null, text: "" }]);
@@ -512,7 +629,6 @@ export default function EditCourse({ auth }) {
         setData(field, updatedItems);
     };
 
-    console.log(data);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -523,71 +639,78 @@ export default function EditCourse({ auth }) {
             <Head title="instructor" />
 
             <div className="py-12 ">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 relative">
                     <form
                         onSubmit={handleSubmit}
                         encType="multipart/form-data"
                         method="post"
                     >
-                    <div className="flex bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 min-h-screen">
-                        <div className="w-1/4 p-4 border-r">
-                            <div className="mb-4">
-                                <input
-                                    type="radio"
-                                    id="intendedLearners"
-                                    name="form"
-                                    value="intendedLearners"
-                                    checked={currentForm === "intendedLearners"}
-                                    onChange={() =>
-                                        setCurrentForm("intendedLearners")
-                                    }
-                                    className="mr-2 accent-purple-500"
-                                />
-                                <label htmlFor="intendedLearners">
-                                    Intended Learners
-                                </label>
+                        <div className="flex bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 min-h-screen">
+                            <div className="w-1/4 p-4 border-r">
+                                <div className="mb-4">
+                                    <input
+                                        type="radio"
+                                        id="intendedLearners"
+                                        name="form"
+                                        value="intendedLearners"
+                                        checked={
+                                            currentForm === "intendedLearners"
+                                        }
+                                        onChange={() =>
+                                            setCurrentForm("intendedLearners")
+                                        }
+                                        className="mr-2 accent-purple-500"
+                                    />
+                                    <label htmlFor="intendedLearners">
+                                        Intended Learners
+                                    </label>
+                                </div>
+                                <div className="mb-4">
+                                    <input
+                                        type="radio"
+                                        id="curriculum"
+                                        name="form"
+                                        value="curriculum"
+                                        checked={currentForm === "curriculum"}
+                                        onChange={() =>
+                                            setCurrentForm("curriculum")
+                                        }
+                                        className="mr-2"
+                                    />
+                                    <label htmlFor="curriculum">
+                                        Curriculum
+                                    </label>
+                                </div>
+                                <div className="mb-4">
+                                    <input
+                                        type="radio"
+                                        id="courseLanding"
+                                        name="form"
+                                        value="courseLanding"
+                                        checked={
+                                            currentForm === "courseLanding"
+                                        }
+                                        onChange={() =>
+                                            setCurrentForm("courseLanding")
+                                        }
+                                        className="mr-2"
+                                    />
+                                    <label htmlFor="courseLanding">
+                                        Course Landing Page
+                                    </label>
+                                </div>
+                                <div className="mt-10">
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 bg-purple-600 text-white rounded"
+                                        disabled={processing}
+                                    >
+                                        Submit for Review
+                                    </button>
+                                </div>
                             </div>
-                            <div className="mb-4">
-                                <input
-                                    type="radio"
-                                    id="curriculum"
-                                    name="form"
-                                    value="curriculum"
-                                    checked={currentForm === "curriculum"}
-                                    onChange={() =>
-                                        setCurrentForm("curriculum")
-                                    }
-                                    className="mr-2"
-                                />
-                                <label htmlFor="curriculum">Curriculum</label>
-                            </div>
-                            <div className="mb-4">
-                                <input
-                                    type="radio"
-                                    id="courseLanding"
-                                    name="form"
-                                    value="courseLanding"
-                                    checked={currentForm === "courseLanding"}
-                                    onChange={() =>
-                                        setCurrentForm("courseLanding")
-                                    }
-                                    className="mr-2"
-                                />
-                                <label htmlFor="courseLanding">
-                                    Course Landing Page
-                                </label>
-                            </div>
-                            <div className="mt-10">
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-purple-600 text-white rounded"
-                                >
-                                    Submit for Review
-                                </button>
-                            </div>
-                        </div>
 
-                        <div className="w-3/4 p-4">
+                            <div className="w-3/4 p-4">
                                 {currentForm === "intendedLearners" && (
                                     <IntendedLearnersForm
                                         data={data}
@@ -607,10 +730,28 @@ export default function EditCourse({ auth }) {
                                         setData={setData}
                                     />
                                 )}
+                            </div>
                         </div>
-                    </div>
-                        </form>
+                    </form>
                 </div>
+                    {Object.keys(errors).length > 0 && (
+                        <div className="mt-4 absolute top-40 right-4">
+                            <h3 className="text-red-600">Validation Errors:</h3>
+                            <ul className="list-disc list-inside text-red-600">
+                                {Object.entries(errors).map(
+                                    ([field, messages]) => (
+                                        <li key={field}>
+                                            {field}:{" "}
+                                            {Array.isArray(messages)
+                                                ? messages.join(", ")
+                                                : messages}
+                                        </li>
+                                    )
+                                )}
+                            </ul>
+                        </div>
+                    )}
+
             </div>
         </AuthenticatedLayout>
     );

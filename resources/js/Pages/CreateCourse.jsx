@@ -12,7 +12,6 @@ export default function CreateCourse({ auth }) {
         category_id: null,
     })
     const [errors, setErrors] = useState({});
-    console.log(auth.user);
 
     const handleSubmit = (e) => { 
         e.preventDefault();
@@ -37,7 +36,7 @@ export default function CreateCourse({ auth }) {
     }
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout auth={auth}>
             <Head title="instructor" />
 
             <div className="py-12 ">

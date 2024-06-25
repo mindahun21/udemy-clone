@@ -50,7 +50,7 @@ export default function SearchResult({ auth }) {
 
     console.log(filteredCourses);
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout auth={auth}>
             <Head title="Search Results" />
             <div className="mx-80 mt-10 mb-10 min-h-screen">
                 <div>

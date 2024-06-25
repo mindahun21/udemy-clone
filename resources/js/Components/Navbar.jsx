@@ -18,7 +18,7 @@ NavLinkItem.propTypes = {
     className: PropTypes.string,
     children: PropTypes.node.isRequired,
 };
-function CartNavLink({ user }) {
+function CartNavLink({ auth }) {
     return (
         <div className="relative px-2 self-center">
             <Link href="/cart">
@@ -37,15 +37,16 @@ function CartNavLink({ user }) {
                     />
                 </svg>
             </Link>
-            {user.cart_courses.length > 0 &&
+            {auth.user && auth.user.cart_courses.length > 0 &&
             
-              <div className="absolute -top-3 -right-1 bg-purple-500 text-white px-2 rounded-full"> {user.cart_courses.length} </div>
+              <div className="absolute -top-3 -right-1 bg-purple-500 text-white px-2 rounded-full"> {auth.user.cart_courses.length} </div>
             }
         </div>
     );
 }
 
-function ProfileNavLink({ user }) {
+function ProfileNavLink({ auth }) {
+    const user = auth.user;
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
     const handleMouseEnter = () => setShowProfileDropdown(true);
@@ -198,7 +199,7 @@ function Category({ category }) {
     );
 }
 
-function Navbar({ user }) {
+function Navbar({ auth }) {
     const categories = useCategories();
     const [showCategories, setShowCategories] = useState(false);
 
@@ -237,7 +238,7 @@ function Navbar({ user }) {
             <SearchBar />
             <div className="flex align-center">
                 <div className="flex align-center gap-2">
-                    {user && user.role == "lecturer" ? (
+                    {auth.user && auth.user.role == "lecturer" ? (
                         <NavLinkItem
                             className="self-center px-2 text-center"
                             href={route("instructor")}
@@ -252,7 +253,7 @@ function Navbar({ user }) {
                             Teach on Udemy
                         </NavLinkItem>
                     )}
-                    {user && (
+                    {auth.user && (
                         <NavLinkItem
                             className="self-center px-2"
                             href="/my-learnings"
@@ -260,9 +261,9 @@ function Navbar({ user }) {
                             My Learnings
                         </NavLinkItem>
                     )}
-                    <CartNavLink user={user} />
-                    {user ? (
-                        <ProfileNavLink user={user} />
+                    <CartNavLink auth={auth} />
+                    {auth.user ? (
+                        <ProfileNavLink auth={auth} />
                     ) : (
                         <>
                             <div className="h-full flex-shrink-0 flex items-center">
